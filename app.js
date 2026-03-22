@@ -184,6 +184,48 @@ async function loadDeck(deckId) {
   nextCard();
 }
 
+/* ─── SRS TIMER ─── */
+let cardTimer = null;
+let cardStartTime = null;
+
+function startCardTimer() {
+  cardStartTime = Date.now();
+  clearInterval(cardTimer);
+
+  const timerEl = document.getElementById("cardTimer");
+  if (!timerEl) return;
+
+  timerEl.textContent = "0s";
+  timerEl.style.color = "var(--timer-color, #10b981)";
+
+  cardTimer = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - cardStartTime) / 1000);
+    timerEl.textContent = elapsed + "s";
+    if (elapsed >= 3) {
+      timerEl.style.color = "#ef4444";
+    } else {
+      timerEl.style.color = "#10b981";
+    }
+  }, 500);
+}
+
+function stopCardTimer() {
+  clearInterval(cardTimer);
+  const elapsed = cardStartTime ? Math.floor((Date.now() - cardStartTime) / 1000) : 0;
+  return elapsed;
+}
+
+/* ─── STATUS BADGE ─── */
+function getStatusBadge(status) {
+  const map = {
+    new:      { icon: "🔵", label: "New" },
+    learning: { icon: "🟡", label: "Learning" },
+    known:    { icon: "🟢", label: "Known" },
+    mastered: { icon: "✅", label: "Mastered" },
+  };
+  return map[status] || map.new;
+}
+
 /* ─── NEXT CARD ─── */
 function nextCard() {
   if (words.length === 0) {
@@ -194,17 +236,44 @@ function nextCard() {
     return;
   }
 
+  // review kerak bo'lgan suzlarni avval ko'rsat
+  const now = new Date();
+  const due = words.filter((w, i) => {
+    const next = w.next_review ? new Date(w.next_review) : now;
+    return next <= now && i !== currentIndex;
+  });
+
   let newIndex;
-  do { newIndex = Math.floor(Math.random() * words.length); }
-  while (newIndex === currentIndex && words.length > 1);
+  if (due.length > 0) {
+    const pick = due[Math.floor(Math.random() * due.length)];
+    newIndex = words.indexOf(pick);
+  } else {
+    do { newIndex = Math.floor(Math.random() * words.length); }
+    while (newIndex === currentIndex && words.length > 1);
+  }
 
   currentIndex = newIndex;
-  document.getElementById("card").classList.remove("flip");
-  document.getElementById("front").innerText = words[currentIndex].front;
-  document.getElementById("back").innerText = words[currentIndex].back;
+  const word = words[currentIndex];
 
+  document.getElementById("card").classList.remove("flip");
+  document.getElementById("front").innerText = word.front;
+  document.getElementById("back").innerText = word.back;
+
+  // Status badge
+  const badge = getStatusBadge(word.status || "new");
+  const statusEl = document.getElementById("cardStatus");
+  if (statusEl) statusEl.textContent = badge.icon + " " + badge.label;
+
+  // Word count + stats
   const countEl = document.getElementById("wordCount");
-  if (countEl) countEl.innerText = t("wordsCount", words.length);
+  if (countEl) {
+    const mastered = words.filter(w => w.status === "mastered").length;
+    const known    = words.filter(w => w.status === "known").length;
+    const learning = words.filter(w => w.status === "learning").length;
+    countEl.innerHTML = `📚 ${words.length} | ✅ ${mastered} &nbsp; 🟢 ${known} &nbsp; 🟡 ${learning}`;
+  }
+
+  startCardTimer();
 }
 
 /* ─── FLIP ─── */
@@ -212,15 +281,63 @@ function flip() { document.getElementById("card").classList.toggle("flip"); }
 document.getElementById("card").onclick = flip;
 document.addEventListener("keydown", (e) => { if (e.code === "Space") flip(); });
 
+/* ─── SRS HISOBLASH ─── */
+function calcSRS(word, rating, timeSpent) {
+  let { ease_factor = 2.5, interval_days = 1, correct_streak = 0,
+        total_reviews = 0, correct_reviews = 0 } = word;
+
+  total_reviews += 1;
+
+  // 3 soniyadan oshsa yoki Again bossa — bilmagan
+  const failed = rating === 0 || timeSpent > 3;
+
+  let status = word.status || "new";
+
+  if (failed) {
+    correct_streak = 0;
+    interval_days  = 1;
+    ease_factor    = Math.max(1.3, ease_factor - 0.2);
+    status = correct_streak === 0 ? "new" : "learning";
+  } else {
+    correct_reviews += 1;
+    correct_streak  += 1;
+
+    if (rating === 1) { // Hard
+      interval_days = Math.max(1, Math.round(interval_days * 1.2));
+      ease_factor   = Math.max(1.3, ease_factor - 0.15);
+    } else if (rating === 2) { // Good
+      interval_days = Math.round(interval_days * ease_factor);
+    } else if (rating === 3) { // Easy
+      interval_days = Math.round(interval_days * ease_factor * 1.3);
+      ease_factor   = ease_factor + 0.1;
+    }
+
+    if (correct_streak >= 5) status = "mastered";
+    else if (correct_streak >= 3) status = "known";
+    else status = "learning";
+  }
+
+  const next_review = new Date(Date.now() + interval_days * 86400000).toISOString();
+
+  return { ease_factor, interval_days, correct_streak, total_reviews, correct_reviews, status, next_review };
+}
+
 /* ─── MARK ─── */
-async function mark(level) {
+async function mark(rating) {
   if (words.length === 0) return;
+
+  const timeSpent = stopCardTimer();
   const word = words[currentIndex];
+  const updates = calcSRS(word, rating, timeSpent);
+
   await supabase.from("words")
-    .update({ level, last_seen: new Date().toISOString() }).eq("id", word.id);
-  words[currentIndex].level = level;
+    .update({ ...updates, last_seen: new Date().toISOString() })
+    .eq("id", word.id);
+
+  Object.assign(words[currentIndex], updates);
   nextCard();
 }
+
 
 
 /* ─── TIL NOMLARI ─── */
