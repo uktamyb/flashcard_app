@@ -451,6 +451,23 @@ function swapLangs() {
   updateTranslatePlaceholders();
 }
 
+/* ─── ENCODING TUZATISH ─── */
+function fixEncoding(text) {
+  return text
+    .replace(/oâ€˜/g, "o'")
+    .replace(/Oâ€˜/g, "O'")
+    .replace(/gâ€˜/g, "g'")
+    .replace(/Gâ€˜/g, "G'")
+    .replace(/o&#x27;/g, "o'")
+    .replace(/g&#x27;/g, "g'")
+    .replace(/o&apos;/g, "o'")
+    .replace(/g&apos;/g, "g'")
+    .replace(/o\u2018/g, "o'")
+    .replace(/g\u2018/g, "g'")
+    .replace(/o\u2019/g, "o'")
+    .replace(/g\u2019/g, "g'");
+}
+
 /* ─── TARJIMA (MyMemory API) ─── */
 async function translateWord() {
   const word = document.getElementById("word").value.trim();
@@ -470,7 +487,7 @@ async function translateWord() {
     const translated = data.responseData?.translatedText || "";
 
     if (translated && translated.toUpperCase() !== word.toUpperCase() && !translated.toLowerCase().includes("mymemory")) {
-      meaningInput.value = translated;
+      meaningInput.value = fixEncoding(translated);
     } else {
       meaningInput.value = "";
       meaningInput.placeholder = "Not found — type manually";
