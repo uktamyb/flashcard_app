@@ -168,7 +168,14 @@
         <div class="back" id="back"></div>
       </div>
     </div>
-    <div class="buttons" id="ratingBtns" style="visibility:hidden;">
+
+    <!-- Bilmadim/Bildim -->
+<div class="buttons" id="knowBtns">
+  <button onclick="dontKnow()">👁 Bilmadim</button>
+  <button onclick="know()">✓ Bildim</button>
+</div>
+
+    <div class="buttons" id="ratingBtns" style="display:none;">
       <button class="again" onclick="mark(0)" data-i18n="again">Again</button>
       <button class="hard" onclick="mark(1)" data-i18n="hard">Hard</button>
       <button class="good" onclick="mark(2)" data-i18n="good">Good</button>

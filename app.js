@@ -295,9 +295,9 @@ function nextCard() {
 
   document.getElementById("card").classList.remove("flip");
 
-  // Tugmalarni yashir — flip qilgandan keyin ko'rinsin
-  const btnsEl = document.getElementById("ratingBtns");
-  if (btnsEl) btnsEl.style.visibility = "hidden";
+  // Tugmalarni reset qilish
+  document.getElementById("knowBtns").style.display = "flex";
+  document.getElementById("ratingBtns").style.display = "none";
 
   document.getElementById("front").innerText = word.front;
   document.getElementById("back").innerText = word.back;
@@ -326,16 +326,16 @@ function updateStats() {
 /* ─── FLIP ─── */
 function flip() {
   const card = document.getElementById("card");
-  card.classList.toggle("flip");
+  card.classList.add("flip");
 
-  if (!isFlipped && card.classList.contains("flip")) {
+  if (!isFlipped) {
     isFlipped = true;
     clearInterval(cardTimer);
     flipTime = Math.floor((Date.now() - cardStartTime) / 1000);
 
-    // Tugmalarni ko'rsat
-    const btnsEl = document.getElementById("ratingBtns");
-    if (btnsEl) btnsEl.style.visibility = "visible";
+    // Rating tugmalarini ko'rsat, know tugmalarini yashir
+    document.getElementById("ratingBtns").style.display = "flex";
+    document.getElementById("knowBtns").style.display = "none";
 
     const timerEl = document.getElementById("cardTimer");
     if (timerEl) {
@@ -345,8 +345,35 @@ function flip() {
   }
 }
 
-document.getElementById("card").onclick = flip;
-document.addEventListener("keydown", (e) => { if (e.code === "Space") flip(); });
+/* ─── BILMADIM → kartani aylanitir ─── */
+function dontKnow() {
+  flip();
+}
+
+/* ─── BILDIM → keyingi kartaga o't ─── */
+function know() {
+  stopCardTimer();
+  const word = words[currentIndex];
+  const updates = calcSRS(word, 2, 0); // Good kabi hisoblash
+
+  supabase.from("words")
+    .update({ ...updates, last_seen: new Date().toISOString() })
+    .eq("id", word.id);
+
+  Object.assign(word, updates);
+  const allIdx = allWords.findIndex(w => w.id === word.id);
+  if (allIdx !== -1) Object.assign(allWords[allIdx], updates);
+
+  nextCard();
+}
+
+document.getElementById("card").onclick = null; // karta bosish o'chirildi
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    if (!isFlipped) dontKnow();
+  }
+});
 
 /* ─── SRS HISOBLASH ─── */
 function calcSRS(word, rating, timeSpent) {
@@ -547,6 +574,8 @@ function renderFilterBtns() {
   }).join("");
 }
 
+window.know = know;
+window.dontKnow = dontKnow;
 window.setFilter = setFilter;
 function createDeck() { openModal(); }
 
