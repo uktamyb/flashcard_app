@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlashCard — Learn Vocabulary</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+
+<!-- TOP RIGHT CONTROLS -->
+<div class="top-controls">
+  <select id="langSelect" onchange="changeLanguage(this.value)" class="lang-select">
+    <option value="en">🇬🇧 EN</option>
+    <option value="uz">🇺🇿 UZ</option>
+    <option value="ru">🇷🇺 RU</option>
+    <option value="tr">🇹🇷 TR</option>
+    <option value="de">🇩🇪 DE</option>
+    <option value="fr">🇫🇷 FR</option>
+    <option value="es">🇪🇸 ES</option>
+    <option value="it">🇮🇹 IT</option>
+    <option value="pt">🇧🇷 PT</option>
+    <option value="ar">🇸🇦 AR</option>
+    <option value="zh">🇨🇳 ZH</option>
+    <option value="ja">🇯🇵 JA</option>
+    <option value="ko">🇰🇷 KO</option>
+    <option value="hi">🇮🇳 HI</option>
+    <option value="fa">🇮🇷 FA</option>
+    <option value="pl">🇵🇱 PL</option>
+    <option value="nl">🇳🇱 NL</option>
+    <option value="sv">🇸🇪 SV</option>
+    <option value="uk">🇺🇦 UK</option>
+    <option value="kk">🇰🇿 KK</option>
+    <option value="az">🇦🇿 AZ</option>
+    <option value="id">🇮🇩 ID</option>
+  </select>
+  <div class="toggle" onclick="toggleTheme()">
+    <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="5"/>
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ LANDING ═══ -->
+<div id="landing">
+  <div class="landing-container">
+    <div class="hero">
+      <div class="hero-badge" data-i18n="badge">✦ AI-powered vocabulary</div>
+      <h1 class="hero-title" data-i18n="heroTitle">Learn words<br><span class="gradient-text" data-i18n="heroTitleSpan">faster than ever</span></h1>
+      <p class="hero-sub" data-i18n="heroSub">Create flashcard decks from movies, books, podcasts — anything. Flip cards, track progress, get AI insights on what to study next.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showAuth('signup')" data-i18n="getStarted">Get started free</button>
+        <button class="btn-ghost" onclick="showAuth('signin')" data-i18n="signIn">Sign in</button>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <h3 data-i18n="f1title">Any source</h3>
+        <p data-i18n="f1desc">Add words from movies, books, songs or anything you watch and read.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3 data-i18n="f2title">AI insights</h3>
+        <p data-i18n="f2desc">AI analyzes your learning and tells you which words to focus on.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3 data-i18n="f3title">20+ languages</h3>
+        <p data-i18n="f3desc">Auto-translate words instantly into your native language.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3 data-i18n="f4title">Track progress</h3>
+        <p data-i18n="f4desc">See your streak, words learned, and pick up where you left off.</p>
+      </div>
+    </div>
+
+    <div class="steps-section">
+      <h2 data-i18n="howItWorks">How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h4 data-i18n="step1title">Create an account</h4>
+          <p data-i18n="step1desc">Sign up for free in seconds</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h4 data-i18n="step2title">Create a deck</h4>
+          <p data-i18n="step2desc">Name it after your movie or book</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h4 data-i18n="step3title">Add words</h4>
+          <p data-i18n="step3desc">Type English, AI translates instantly</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h4 data-i18n="step4title">Start learning</h4>
+          <p data-i18n="step4desc">Flip cards and track your progress</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div id="authModal" class="modal hidden">
+  <div class="modal-content auth-modal">
+    <button class="modal-close" onclick="hideAuth()">✕</button>
+    <div id="authSignup">
+      <h2 data-i18n="createAccount">Create account</h2>
+      <p class="auth-sub" data-i18n="startFree">Start learning for free</p>
+      <input id="signupEmail" type="email" placeholder="Email" />
+      <input id="signupPassword" type="password" data-i18n-placeholder="passwordPlaceholder" placeholder="Password (min 6 characters)" />
+      <button class="btn-primary full" onclick="handleSignUp()" data-i18n="createAccount">Create account</button>
+      <p class="auth-switch"><span data-i18n="haveAccount">Already have an account?</span> <span onclick="showAuth('signin')" data-i18n="signIn">Sign in</span></p>
+    </div>
+    <div id="authSignin" class="hidden">
+      <h2 data-i18n="welcomeBack">Welcome back</h2>
+      <p class="auth-sub" data-i18n="continueLearn">Sign in to continue learning</p>
+      <input id="signinEmail" type="email" placeholder="Email" />
+      <input id="signinPassword" type="password" data-i18n-placeholder="passwordOnly" placeholder="Password" />
+      <button class="btn-primary full" onclick="handleSignIn()" data-i18n="signIn">Sign in</button>
+      <p class="auth-switch"><span data-i18n="noAccount">No account?</span> <span onclick="showAuth('signup')" data-i18n="getStarted">Sign up</span></p>
+    </div>
+    <div id="authError" class="auth-error hidden"></div>
+  </div>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div id="home" style="display:none;">
+  <div class="container">
+    <div class="home-header">
+      <div>
+        <h2 data-i18n="myDecks">My Decks</h2>
+        <p id="userEmail" class="user-email"></p>
+      </div>
+      <button class="btn-ghost small" onclick="handleSignOut()" data-i18n="signOut">Sign out</button>
+    </div>
+    <div id="aiInsight" class="ai-insight hidden">
+      <span class="ai-icon">🤖</span>
+      <span id="aiInsightText"></span>
+    </div>
+    <div id="deckList"></div>
+    <button class="btn-primary" style="margin-top:12px;" onclick="createDeck()" data-i18n="createDeck">➕ Create Deck</button>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app" style="display:none;">
+  <div class="container">
+    <p id="wordCount" style="opacity:0.5; font-size:14px; margin:0 0 8px 0;"></p>
+    <div class="card" id="card">
+      <div class="inner">
+        <div class="front" id="front"></div>
+        <div class="back" id="back"></div>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="again" onclick="mark(0)" data-i18n="again">Again</button>
+      <button class="hard" onclick="mark(1)" data-i18n="hard">Hard</button>
+      <button class="good" onclick="mark(2)" data-i18n="good">Good</button>
+      <button class="easy" onclick="mark(3)" data-i18n="easy">Easy</button>
+    </div>
+    <br>
+    <button onclick="goHome()" data-i18n="back">⬅ Back</button>
+
+    <h4 data-i18n="addWord">Add Word</h4>
+
+    <!-- Til juftligi -->
+    <div class="translate-bar">
+      <select id="fromLang" class="lang-select-inline" onchange="updateTranslatePlaceholders()">
+        <option value="en">🇬🇧 English</option>
+        <option value="uz">🇺🇿 Uzbek</option>
+        <option value="ru">🇷🇺 Russian</option>
+        <option value="tr">🇹🇷 Turkish</option>
+        <option value="de">🇩🇪 German</option>
+        <option value="fr">🇫🇷 French</option>
+        <option value="es">🇪🇸 Spanish</option>
+        <option value="it">🇮🇹 Italian</option>
+        <option value="pt">🇧🇷 Portuguese</option>
+        <option value="ar">🇸🇦 Arabic</option>
+        <option value="zh">🇨🇳 Chinese</option>
+        <option value="ja">🇯🇵 Japanese</option>
+        <option value="ko">🇰🇷 Korean</option>
+        <option value="hi">🇮🇳 Hindi</option>
+        <option value="fa">🇮🇷 Persian</option>
+        <option value="pl">🇵🇱 Polish</option>
+        <option value="nl">🇳🇱 Dutch</option>
+        <option value="sv">🇸🇪 Swedish</option>
+        <option value="uk">🇺🇦 Ukrainian</option>
+        <option value="kk">🇰🇿 Kazakh</option>
+        <option value="az">🇦🇿 Azerbaijani</option>
+        <option value="id">🇮🇩 Indonesian</option>
+        <option value="el">🇬🇷 Greek</option>
+      </select>
+      <button class="swap-btn" onclick="swapLangs()" title="Swap">⇄</button>
+      <select id="toLang" class="lang-select-inline" onchange="updateTranslatePlaceholders()">
+        <option value="uz">🇺🇿 Uzbek</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="ru">🇷🇺 Russian</option>
+        <option value="tr">🇹🇷 Turkish</option>
+        <option value="de">🇩🇪 German</option>
+        <option value="fr">🇫🇷 French</option>
+        <option value="es">🇪🇸 Spanish</option>
+        <option value="it">🇮🇹 Italian</option>
+        <option value="pt">🇧🇷 Portuguese</option>
+        <option value="ar">🇸🇦 Arabic</option>
+        <option value="zh">🇨🇳 Chinese</option>
+        <option value="ja">🇯🇵 Japanese</option>
+        <option value="ko">🇰🇷 Korean</option>
+        <option value="hi">🇮🇳 Hindi</option>
+        <option value="fa">🇮🇷 Persian</option>
+        <option value="pl">🇵🇱 Polish</option>
+        <option value="nl">🇳🇱 Dutch</option>
+        <option value="sv">🇸🇪 Swedish</option>
+        <option value="uk">🇺🇦 Ukrainian</option>
+        <option value="kk">🇰🇿 Kazakh</option>
+        <option value="az">🇦🇿 Azerbaijani</option>
+        <option value="id">🇮🇩 Indonesian</option>
+        <option value="el">🇬🇷 Greek</option>
+      </select>
+    </div>
+
+    <input id="word" placeholder="Enter word..." />
+    <input id="meaning" placeholder="Translation..." readonly />
+    <button class="btn-primary full" style="margin-top:6px;" onclick="addWord()" data-i18n="add">Add</button>
+  </div>
+</div>
+
+<!-- CREATE DECK MODAL -->
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <h3 data-i18n="createDeckTitle">Create Deck</h3>
+    <input id="deckName" data-i18n-placeholder="deckPlaceholder" placeholder="e.g. Game of Thrones, Breaking Bad..." />
+    <div class="modal-actions">
+      <button onclick="saveDeck()" data-i18n="save">Save</button>
+      <button onclick="closeModal()" data-i18n="cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS TOAST -->
+<div id="successToast" class="success-toast hidden">
+  <span id="successText"></span>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
