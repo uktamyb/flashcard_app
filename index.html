@@ -155,6 +155,7 @@
 <!-- ═══ APP ═══ -->
 <div id="app" style="display:none;">
   <div class="container">
+    <div id="filterBtns" class="filter-btns"></div>
     <div class="card-header">
   <span id="cardStatus" class="status-badge">🔵 New</span>
   <span id="cardTimer" class="card-timer">0s</span>
@@ -167,7 +168,7 @@
         <div class="back" id="back"></div>
       </div>
     </div>
-    <div class="buttons">
+    <div class="buttons" id="ratingBtns" style="visibility:hidden;">
       <button class="again" onclick="mark(0)" data-i18n="again">Again</button>
       <button class="hard" onclick="mark(1)" data-i18n="hard">Hard</button>
       <button class="good" onclick="mark(2)" data-i18n="good">Good</button>

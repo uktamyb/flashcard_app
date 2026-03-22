@@ -177,35 +177,42 @@ async function renderDecks() {
 async function loadDeck(deckId) {
   currentDeckId = deckId;
   const { data } = await supabase.from("words").select("*").eq("deck_id", deckId);
-  words = data || [];
+  allWords = data || [];
+  words = [...allWords];
+  activeFilter = "all";
+
   document.getElementById("home").style.display = "none";
   document.getElementById("app").style.display = "flex";
   applyTranslations();
+
+  // Filter tugmalarini render qil
+  renderFilterBtns();
   nextCard();
 }
 
 /* ─── SRS TIMER ─── */
 let cardTimer = null;
 let cardStartTime = null;
+let flipTime = null;
+let isFlipped = false;
 
 function startCardTimer() {
   cardStartTime = Date.now();
+  flipTime = null;
+  isFlipped = false;
   clearInterval(cardTimer);
 
   const timerEl = document.getElementById("cardTimer");
   if (!timerEl) return;
 
   timerEl.textContent = "0s";
-  timerEl.style.color = "var(--timer-color, #10b981)";
+  timerEl.style.color = "#10b981";
 
   cardTimer = setInterval(() => {
+    if (isFlipped) return;
     const elapsed = Math.floor((Date.now() - cardStartTime) / 1000);
     timerEl.textContent = elapsed + "s";
-    if (elapsed >= 3) {
-      timerEl.style.color = "#ef4444";
-    } else {
-      timerEl.style.color = "#10b981";
-    }
+    timerEl.style.color = elapsed >= 5 ? "#ef4444" : "#10b981";
   }, 500);
 }
 
@@ -213,6 +220,37 @@ function stopCardTimer() {
   clearInterval(cardTimer);
   const elapsed = cardStartTime ? Math.floor((Date.now() - cardStartTime) / 1000) : 0;
   return elapsed;
+}
+
+/* ─── FILTER ─── */
+let activeFilter = "all";
+let allWords = [];
+
+function setFilter(filter) {
+  activeFilter = filter;
+
+  // Tugmalarni yangilash
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.filter === filter);
+  });
+
+  // Filterlangan so'zlar
+  if (filter === "all") {
+    words = [...allWords];
+  } else {
+    words = allWords.filter(w => (w.status || "new") === filter);
+  }
+
+  if (words.length === 0) {
+    document.getElementById("front").innerText = "Bu filterde so'z yo'q";
+    document.getElementById("back").innerText = "";
+    const countEl = document.getElementById("wordCount");
+    if (countEl) countEl.innerHTML = "0 ta so'z";
+    return;
+  }
+
+  currentIndex = 0;
+  nextCard();
 }
 
 /* ─── STATUS BADGE ─── */
@@ -236,7 +274,7 @@ function nextCard() {
     return;
   }
 
-  // review kerak bo'lgan suzlarni avval ko'rsat
+  // review kerak bo'lgan so'zlarni avval ko'rsat
   const now = new Date();
   const due = words.filter((w, i) => {
     const next = w.next_review ? new Date(w.next_review) : now;
@@ -256,6 +294,11 @@ function nextCard() {
   const word = words[currentIndex];
 
   document.getElementById("card").classList.remove("flip");
+
+  // Tugmalarni yashir — flip qilgandan keyin ko'rinsin
+  const btnsEl = document.getElementById("ratingBtns");
+  if (btnsEl) btnsEl.style.visibility = "hidden";
+
   document.getElementById("front").innerText = word.front;
   document.getElementById("back").innerText = word.back;
 
@@ -264,20 +307,44 @@ function nextCard() {
   const statusEl = document.getElementById("cardStatus");
   if (statusEl) statusEl.textContent = badge.icon + " " + badge.label;
 
-  // Word count + stats
-  const countEl = document.getElementById("wordCount");
-  if (countEl) {
-    const mastered = words.filter(w => w.status === "mastered").length;
-    const known    = words.filter(w => w.status === "known").length;
-    const learning = words.filter(w => w.status === "learning").length;
-    countEl.innerHTML = `📚 ${words.length} | ✅ ${mastered} &nbsp; 🟢 ${known} &nbsp; 🟡 ${learning}`;
-  }
-
+  // Stats
+  updateStats();
   startCardTimer();
 }
 
+function updateStats() {
+  const countEl = document.getElementById("wordCount");
+  if (!countEl) return;
+  const total    = allWords.length;
+  const mastered = allWords.filter(w => w.status === "mastered").length;
+  const known    = allWords.filter(w => w.status === "known").length;
+  const learning = allWords.filter(w => w.status === "learning").length;
+  const newW     = allWords.filter(w => !w.status || w.status === "new").length;
+  countEl.innerHTML = `📚 ${total} &nbsp;|&nbsp; 🔵 ${newW} &nbsp; 🟡 ${learning} &nbsp; 🟢 ${known} &nbsp; ✅ ${mastered}`;
+}
+
 /* ─── FLIP ─── */
-function flip() { document.getElementById("card").classList.toggle("flip"); }
+function flip() {
+  const card = document.getElementById("card");
+  card.classList.toggle("flip");
+
+  if (!isFlipped && card.classList.contains("flip")) {
+    isFlipped = true;
+    clearInterval(cardTimer);
+    flipTime = Math.floor((Date.now() - cardStartTime) / 1000);
+
+    // Tugmalarni ko'rsat
+    const btnsEl = document.getElementById("ratingBtns");
+    if (btnsEl) btnsEl.style.visibility = "visible";
+
+    const timerEl = document.getElementById("cardTimer");
+    if (timerEl) {
+      timerEl.textContent = flipTime + "s";
+      timerEl.style.color = flipTime > 5 ? "#ef4444" : "#10b981";
+    }
+  }
+}
+
 document.getElementById("card").onclick = flip;
 document.addEventListener("keydown", (e) => { if (e.code === "Space") flip(); });
 
@@ -288,8 +355,8 @@ function calcSRS(word, rating, timeSpent) {
 
   total_reviews += 1;
 
-  // 3 soniyadan oshsa yoki Again bossa — bilmagan
-  const failed = rating === 0 || timeSpent > 3;
+  // 5 soniyadan oshsa yoki Again bossa — bilmagan
+  const failed = rating === 0 || timeSpent > 5;
 
   let status = word.status || "new";
 
@@ -297,7 +364,7 @@ function calcSRS(word, rating, timeSpent) {
     correct_streak = 0;
     interval_days  = 1;
     ease_factor    = Math.max(1.3, ease_factor - 0.2);
-    status = correct_streak === 0 ? "new" : "learning";
+    status         = "new";
   } else {
     correct_reviews += 1;
     correct_streak  += 1;
@@ -312,12 +379,14 @@ function calcSRS(word, rating, timeSpent) {
       ease_factor   = ease_factor + 0.1;
     }
 
-    if (correct_streak >= 5) status = "mastered";
+    if (correct_streak >= 5)      status = "mastered";
     else if (correct_streak >= 3) status = "known";
-    else status = "learning";
+    else                          status = "learning";
   }
 
-  const next_review = new Date(Date.now() + interval_days * 86400000).toISOString();
+  // Mastered so'zlar 30 kun keyin qayta chiqadi
+  const days = status === "mastered" ? 30 : interval_days;
+  const next_review = new Date(Date.now() + days * 86400000).toISOString();
 
   return { ease_factor, interval_days, correct_streak, total_reviews, correct_reviews, status, next_review };
 }
@@ -326,7 +395,7 @@ function calcSRS(word, rating, timeSpent) {
 async function mark(rating) {
   if (words.length === 0) return;
 
-  const timeSpent = stopCardTimer();
+  const timeSpent = flipTime !== null ? flipTime : stopCardTimer();
   const word = words[currentIndex];
   const updates = calcSRS(word, rating, timeSpent);
 
@@ -334,7 +403,11 @@ async function mark(rating) {
     .update({ ...updates, last_seen: new Date().toISOString() })
     .eq("id", word.id);
 
-  Object.assign(words[currentIndex], updates);
+  // allWords va words ni yangilash
+  Object.assign(word, updates);
+  const allIdx = allWords.findIndex(w => w.id === word.id);
+  if (allIdx !== -1) Object.assign(allWords[allIdx], updates);
+
   nextCard();
 }
 
@@ -433,7 +506,31 @@ async function addWord() {
   if (countEl) countEl.innerText = t("wordsCount", words.length);
 }
 
-/* ─── DECK YARAT / O'CHIR ─── */
+/* ─── FILTER TUGMALARI ─── */
+function renderFilterBtns() {
+  const el = document.getElementById("filterBtns");
+  if (!el) return;
+
+  const filters = [
+    { key: "all",      label: "Hammasi" },
+    { key: "new",      label: "🔵 New" },
+    { key: "learning", label: "🟡 Learning" },
+    { key: "known",    label: "🟢 Known" },
+    { key: "mastered", label: "✅ Mastered" },
+  ];
+
+  el.innerHTML = filters.map(f => {
+    const count = f.key === "all"
+      ? allWords.length
+      : allWords.filter(w => (w.status || "new") === f.key).length;
+    return `<button class="filter-btn ${f.key === activeFilter ? "active" : ""}"
+      data-filter="${f.key}" onclick="setFilter('${f.key}')">
+      ${f.label} <span class="filter-count">${count}</span>
+    </button>`;
+  }).join("");
+}
+
+window.setFilter = setFilter;
 function createDeck() { openModal(); }
 
 async function saveDeck() {
