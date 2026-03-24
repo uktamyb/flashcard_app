@@ -1,0 +1,403 @@
+/* ═══════════════════════════════════════
+   MEMORY MATCHING GAME — Duolingo Style
+   ═══════════════════════════════════════ */
+
+body.dark  {
+  --mg-bg: #0d1b2a; --mg-surface: #1a2a3a;
+  --mg-border: #2a3f50; --mg-text: #e8f4f8; --mg-sub: #7a9fb0;
+}
+body.light {
+  --mg-bg: #f0faf4; --mg-surface: #ffffff;
+  --mg-border: #b8e6c4; --mg-text: #1a3a28; --mg-sub: #5a7a68;
+}
+
+/* ── Overlay ── */
+#memoryGame {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  overflow-y: auto;
+  background: var(--mg-bg);
+  padding-bottom: 60px;
+  animation: mg-slidein 0.3s ease;
+}
+
+@keyframes mg-slidein {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mg-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ── Header ── */
+.mg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 20px;
+  gap: 8px;
+}
+
+.mg-header-left,
+.mg-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.mg-header-right  { justify-content: flex-end; flex-wrap: wrap; }
+.mg-header-center { flex: 0 0 auto; }
+
+.mg-back-btn {
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-border);
+  border-radius: 12px;
+  color: var(--mg-text);
+  width: 40px; height: 40px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.mg-back-btn:hover { background: var(--mg-border); transform: translateY(-1px); }
+
+.mg-level-badge {
+  background: linear-gradient(135deg, #58CC02, #46A302);
+  color: white;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: 0 3px 0 #3a8f01;
+  white-space: nowrap;
+}
+
+.mg-hearts  { display: flex; gap: 3px; }
+.mg-heart   { font-size: 20px; transition: all 0.3s; }
+.mg-heart.lost { filter: grayscale(1) opacity(0.25); transform: scale(0.75); }
+
+.mg-xp-badge {
+  background: linear-gradient(135deg, #FF9600, #e07c00);
+  color: white;
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: 0 3px 0 #b06000;
+  white-space: nowrap;
+}
+
+.mg-daily-btn {
+  background: linear-gradient(135deg, #1CB0F6, #0090d4);
+  color: white;
+  border: none;
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 3px 0 #0070a8;
+  white-space: nowrap;
+}
+.mg-daily-btn:hover  { transform: translateY(-2px); box-shadow: 0 5px 0 #0070a8; }
+.mg-daily-btn:active { transform: translateY(1px);  box-shadow: 0 1px 0 #0070a8; }
+
+.mg-daily-active {
+  background: linear-gradient(135deg, #FF9600, #e07c00);
+  color: white;
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ── Progress ── */
+.mg-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.mg-progress-bar {
+  flex: 1;
+  height: 14px;
+  background: var(--mg-border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.mg-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #58CC02, #89E219);
+  border-radius: 7px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mg-progress-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mg-sub);
+  white-space: nowrap;
+}
+
+/* ── Board ── */
+.mg-board {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.mg-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.mg-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.mg-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 360px) {
+  .mg-cols-4, .mg-cols-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Card ── */
+.mg-card {
+  aspect-ratio: 3/4;
+  cursor: pointer;
+  perspective: 1000px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mg-card-inner {
+  position: relative;
+  width: 100%; height: 100%;
+  transition: transform 0.5s cubic-bezier(0.34, 1.1, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+.mg-card.flipped .mg-card-inner,
+.mg-card.matched .mg-card-inner {
+  transform: rotateY(180deg);
+}
+
+.mg-card-hidden,
+.mg-card-shown {
+  position: absolute; inset: 0;
+  border-radius: 14px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+/* Back face: emoji */
+.mg-card-hidden {
+  background: var(--mg-surface);
+  border: 2.5px solid var(--mg-border);
+  box-shadow: 0 3px 0 var(--mg-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.mg-card:not(.flipped):not(.matched):hover .mg-card-hidden {
+  border-color: #58CC02;
+  box-shadow: 0 5px 0 #3a8f01;
+}
+
+.mg-card-emoji { font-size: 2em; line-height: 1; }
+.mg-cols-4 .mg-card-emoji { font-size: 1.4em; }
+.mg-cols-3 .mg-card-emoji { font-size: 1.7em; }
+
+/* Front face: word */
+.mg-card-shown {
+  background: var(--card-color, #58CC02);
+  transform: rotateY(180deg);
+  padding: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+
+.mg-card-text {
+  color: white;
+  font-weight: 700;
+  font-size: clamp(10px, 2.8vw, 15px);
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.mg-cols-4 .mg-card-text { font-size: clamp(9px, 2vw, 12px); }
+
+/* Matched state */
+.mg-card.matched .mg-card-shown {
+  opacity: 0.5;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,0.45);
+}
+
+/* ── Animations ── */
+@keyframes mg-correct {
+  0%, 100% { transform: scale(1); }
+  45%       { transform: scale(1.1); }
+}
+@keyframes mg-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-7px); }
+  40%       { transform: translateX(7px); }
+  60%       { transform: translateX(-5px); }
+  80%       { transform: translateX(5px); }
+}
+@keyframes mg-pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  70%  { transform: scale(1.18); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+.mg-card.correct-flash { animation: mg-correct 0.4s ease; }
+.mg-card.wrong-shake   { animation: mg-shake   0.5s ease; }
+
+/* ── Level Complete ── */
+.mg-level-complete {
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--mg-surface);
+  border-radius: 24px;
+  border: 2px solid var(--mg-border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.mg-complete-icon  { font-size: 68px; animation: mg-pop 0.5s ease; display: block; margin-bottom: 12px; }
+.mg-complete-title { font-size: 24px; font-weight: 800; color: var(--mg-text); margin: 0 0 8px; }
+.mg-complete-score { color: var(--mg-sub); font-size: 14px; margin: 0 0 14px; }
+.mg-stars          { font-size: 34px; margin-bottom: 22px; letter-spacing: 6px; }
+
+.mg-next-btn {
+  background: linear-gradient(135deg, #58CC02, #46A302);
+  color: white; border: none;
+  padding: 16px 32px;
+  border-radius: 16px;
+  font-size: 17px; font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 5px 0 #3a8f01;
+  width: 100%; max-width: 300px;
+}
+.mg-next-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 0 #3a8f01; }
+.mg-next-btn:active { transform: translateY(3px);  box-shadow: 0 2px 0 #3a8f01; }
+
+/* ── Game Over ── */
+.mg-game-over {
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--mg-surface);
+  border-radius: 24px;
+  border: 2px solid rgba(255,75,75,0.5);
+  box-shadow: 0 8px 24px rgba(255,75,75,0.12);
+  margin-bottom: 20px;
+}
+
+.mg-over-icon  { font-size: 68px; display: block; margin-bottom: 12px; }
+.mg-over-title { font-size: 24px; font-weight: 800; color: #FF4B4B; margin: 0 0 8px; }
+.mg-over-score { color: var(--mg-sub); font-size: 14px; margin: 0 0 22px; }
+
+.mg-retry-btn {
+  background: linear-gradient(135deg, #FF4B4B, #d83030);
+  color: white; border: none;
+  padding: 16px 32px;
+  border-radius: 16px;
+  font-size: 17px; font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 5px 0 #a02020;
+  width: 100%; max-width: 300px;
+}
+.mg-retry-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 0 #a02020; }
+.mg-retry-btn:active { transform: translateY(3px);  box-shadow: 0 2px 0 #a02020; }
+
+/* ── Tip ── */
+.mg-tip {
+  text-align: center;
+  font-size: 13px;
+  color: var(--mg-sub);
+  margin-bottom: 16px;
+}
+
+/* ── Error words panel ── */
+.mg-error-words {
+  padding: 14px 16px;
+  background: var(--mg-surface);
+  border-radius: 16px;
+  border: 1.5px solid var(--mg-border);
+  margin-top: 8px;
+}
+.mg-error-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mg-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+}
+.mg-error-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,75,75,0.1);
+  border: 1px solid rgba(255,75,75,0.25);
+  color: #FF4B4B;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 3px;
+}
+.mg-error-tag small { opacity: 0.65; font-size: 10px; }
+
+/* ── Empty state ── */
+.mg-empty {
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--mg-surface);
+  border-radius: 24px;
+  border: 2px solid var(--mg-border);
+}
+.mg-empty-icon  { font-size: 60px; display: block; margin-bottom: 12px; }
+.mg-empty-title { font-size: 20px; font-weight: 800; color: var(--mg-text); margin: 0 0 8px; }
+.mg-empty-sub   { color: var(--mg-sub); font-size: 14px; }
+
+/* ── Launch buttons (inside #app) ── */
+.mg-launch-area {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 4px;
+  flex-wrap: wrap;
+}
+.mg-launch-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 13px 10px;
+  border: none;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+}
+.mg-launch-btn.green {
+  background: linear-gradient(135deg, #58CC02, #46A302);
+  color: white;
+  box-shadow: 0 4px 0 #3a8f01;
+}
+.mg-launch-btn.green:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 #3a8f01; }
+.mg-launch-btn.green:active { transform: translateY(2px);  box-shadow: 0 2px 0 #3a8f01; }
+
+.mg-launch-btn.blue {
+  background: linear-gradient(135deg, #1CB0F6, #0090d4);
+  color: white;
+  box-shadow: 0 4px 0 #0070a8;
+}
+.mg-launch-btn.blue:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 #0070a8; }
+.mg-launch-btn.blue:active { transform: translateY(2px);  box-shadow: 0 2px 0 #0070a8; }

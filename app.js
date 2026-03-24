@@ -1,5 +1,6 @@
 import { supabase, getUser, signUp, signIn, signOut, onAuthChange } from "./auth.js";
 import { t, setLang, applyTranslations, currentLang } from "./i18n.js";
+import { MemoryGame } from "./memory-game.js";
 
 /* ─── THEME ─── */
 (function () {
@@ -113,6 +114,8 @@ async function showHome() {
 function goHome() {
   document.getElementById("home").style.display = "flex";
   document.getElementById("app").style.display = "none";
+  const launchArea = document.getElementById("mgLaunchArea");
+  if (launchArea) launchArea.style.display = "none";
   renderDecks();
 }
 
@@ -184,6 +187,10 @@ async function loadDeck(deckId) {
   document.getElementById("home").style.display = "none";
   document.getElementById("app").style.display = "flex";
   applyTranslations();
+
+  // Memory game tugmasini ko'rsat (2+ so'z bo'lsa)
+  const launchArea = document.getElementById("mgLaunchArea");
+  if (launchArea) launchArea.style.display = allWords.length >= 2 ? "flex" : "none";
 
   // Filter tugmalarini render qil
   renderFilterBtns();
@@ -636,6 +643,19 @@ function toggleTheme() {
   }
   localStorage.setItem("theme", body.className);
 }
+
+/* ─── MEMORY GAME ─── */
+function startMemoryGame(isDailyChallenge = false) {
+  const container = document.getElementById("memoryGame");
+  if (!container) return;
+  container.style.display = "block";
+  const game = new MemoryGame(container, allWords, currentDeckId);
+  window.__memoryGame = game;
+  game.start(isDailyChallenge);
+}
+
+window.startMemoryGame = () => startMemoryGame(false);
+window.startDailyGame  = () => startMemoryGame(true);
 
 /* ─── GLOBAL ─── */
 window.showAuth = showAuth;

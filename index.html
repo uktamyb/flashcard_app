@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlashCard — Learn Vocabulary</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="memory-game.css">
 </head>
 <body class="dark">
 
@@ -156,6 +157,12 @@
 <div id="app" style="display:none;">
   <div class="container">
     <div id="filterBtns" class="filter-btns"></div>
+
+    <!-- Memory Game Launch -->
+    <div class="mg-launch-area" id="mgLaunchArea" style="display:none;">
+      <button class="mg-launch-btn green" onclick="window.startMemoryGame()">🎮 Memory O'yin</button>
+      <button class="mg-launch-btn blue"  onclick="window.startDailyGame()">☀️ Daily Challenge</button>
+    </div>
     <div class="card-header">
   <span id="cardStatus" class="status-badge">🔵 New</span>
   <span id="cardTimer" class="card-timer">0s</span>
@@ -263,6 +270,9 @@
 <div id="successToast" class="success-toast hidden">
   <span id="successText"></span>
 </div>
+
+<!-- Memory Game Container -->
+<div id="memoryGame" style="display:none;"></div>
 
 <script type="module" src="app.js"></script>
 </body>
