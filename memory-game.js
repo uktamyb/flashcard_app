@@ -2,6 +2,7 @@
 //  MEMORY MATCHING GAME  —  Duolingo Style
 //  Integratsiya: app.js → import { MemoryGame }
 // ════════════════════════════════════════════════
+import { t } from './i18n.js';
 
 const EMOJIS = [
   '🌟','🎯','🦁','🐬','🦋','🌈','🔥','⚡','🎸','🍀',
@@ -197,8 +198,8 @@ export class MemoryGame {
           <div class="mg-header-right">
             <div class="mg-xp-badge" id="mgXP">⭐ ${this.xp} XP</div>
             ${this.isDailyChallenge
-              ? '<div class="mg-daily-active">☀️ Daily</div>'
-              : '<button class="mg-daily-btn" id="mgDaily">☀️ Daily</button>'
+              ? `<div class="mg-daily-active">${t('mgLaunchDaily')}</div>`
+              : `<button class="mg-daily-btn" id="mgDaily">${t('mgLaunchDaily')}</button>`
             }
           </div>
         </div>
@@ -207,7 +208,7 @@ export class MemoryGame {
           <div class="mg-progress-bar">
             <div class="mg-progress-fill" id="mgFill" style="width:0%"></div>
           </div>
-          <span class="mg-progress-text" id="mgPText">0/${pairs} juft</span>
+          <span class="mg-progress-text" id="mgPText">${t('mgPairs', 0, pairs)}</span>
         </div>
 
         <div class="mg-board mg-cols-${cols}" id="mgBoard">
@@ -225,7 +226,7 @@ export class MemoryGame {
           `).join('')}
         </div>
 
-        <p class="mg-tip">💡 So'z va uning tarjimasini juftlashtir!</p>
+        <p class="mg-tip">${t('mgTip')}</p>
 
         <div id="mgErrors"></div>
 
@@ -256,7 +257,7 @@ export class MemoryGame {
 
     el.innerHTML = `
       <div class="mg-error-words">
-        <div class="mg-error-title">🎯 Ko'p xato qilingan so'zlar</div>
+        <div class="mg-error-title">${t('mgErrors')}</div>
         ${list.map(e =>
           `<span class="mg-error-tag">${this._esc(e.w.front)} <small>${e.n}✗</small></span>`
         ).join('')}
@@ -272,8 +273,8 @@ export class MemoryGame {
         </div>
         <div class="mg-empty">
           <span class="mg-empty-icon">📚</span>
-          <h2 class="mg-empty-title">So'zlar yetarli emas</h2>
-          <p class="mg-empty-sub">O'yin boshlash uchun kamida 2 ta so'z qo'shing</p>
+          <h2 class="mg-empty-title">${t('mgNotEnough')}</h2>
+          <p class="mg-empty-sub">${t('mgNotEnoughSub')}</p>
         </div>
       </div>
     `;
@@ -293,7 +294,7 @@ export class MemoryGame {
 
     if (this.flipped.length === 2) {
       this.locked = true;
-      setTimeout(() => this._checkMatch(), 750);
+      setTimeout(() => this._checkMatch(), 1100);
     }
   }
 
@@ -344,7 +345,7 @@ export class MemoryGame {
         this.flipped = [];
         this.locked  = false;
         if (this.hearts === 0) setTimeout(() => this._gameOver(), 300);
-      }, 950);
+      }, 1400);
     }
   }
 
@@ -357,7 +358,7 @@ export class MemoryGame {
     if (fill) fill.style.width = pct + '%';
 
     const txt = this.container.querySelector('#mgPText');
-    if (txt) txt.textContent = `${done}/${pairs} juft`;
+    if (txt) txt.textContent = t('mgPairs', done, pairs);
 
     const xpEl = this.container.querySelector('#mgXP');
     if (xpEl) xpEl.textContent = `⭐ ${this.xp} XP`;
@@ -380,11 +381,11 @@ export class MemoryGame {
     board.id = 'mgBoard';
     board.innerHTML = `
       <span class="mg-complete-icon">🎉</span>
-      <h2 class="mg-complete-title">Level ${this.level} tugadi!</h2>
-      <p class="mg-complete-score">+20 XP &nbsp;·&nbsp; Jami: ${this.score} ball</p>
+      <h2 class="mg-complete-title">${t('mgLevelDone', this.level)}</h2>
+      <p class="mg-complete-score">+20 XP &nbsp;·&nbsp; ${t('mgTotalScore', this.score)}</p>
       <div class="mg-stars">${stars}</div>
       <button class="mg-next-btn" id="mgNext">
-        ${isLast ? "🏆 O'yinni yakunla" : '▶ Keyingi Level'}
+        ${isLast ? t('mgFinishGame') : t('mgNextLevel')}
       </button>
     `;
 
@@ -410,9 +411,9 @@ export class MemoryGame {
     board.id = 'mgBoard';
     board.innerHTML = `
       <span class="mg-over-icon">💔</span>
-      <h2 class="mg-over-title">O'yin tugadi!</h2>
-      <p class="mg-over-score">Ball: ${this.score} &nbsp;·&nbsp; ⭐ ${this.xp} XP</p>
-      <button class="mg-retry-btn" id="mgRetry">🔄 Qayta boshlash</button>
+      <h2 class="mg-over-title">${t('mgGameOver')}</h2>
+      <p class="mg-over-score">${t('mgScoreLabel', this.score)} &nbsp;·&nbsp; ⭐ ${this.xp} XP</p>
+      <button class="mg-retry-btn" id="mgRetry">${t('mgRetry')}</button>
     `;
 
     board.querySelector('#mgRetry').addEventListener('click', () =>
