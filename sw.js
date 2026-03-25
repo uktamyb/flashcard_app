@@ -1,5 +1,5 @@
 // FlashCard PWA Service Worker
-const CACHE = 'flashcard-v2';
+const CACHE = 'flashcard-v3';
 const ASSETS = [
   './index.html',
   './style.css',
