@@ -18,39 +18,54 @@
 </head>
 <body class="dark">
 
-<!-- TOP RIGHT CONTROLS -->
-<div class="top-controls">
-  <select id="langSelect" onchange="changeLanguage(this.value)" class="lang-select">
-    <option value="en">🇬🇧 EN</option>
-    <option value="uz">🇺🇿 UZ</option>
-    <option value="ru">🇷🇺 RU</option>
-    <option value="tr">🇹🇷 TR</option>
-    <option value="de">🇩🇪 DE</option>
-    <option value="fr">🇫🇷 FR</option>
-    <option value="es">🇪🇸 ES</option>
-    <option value="it">🇮🇹 IT</option>
-    <option value="pt">🇧🇷 PT</option>
-    <option value="ar">🇸🇦 AR</option>
-    <option value="zh">🇨🇳 ZH</option>
-    <option value="ja">🇯🇵 JA</option>
-    <option value="ko">🇰🇷 KO</option>
-    <option value="hi">🇮🇳 HI</option>
-    <option value="fa">🇮🇷 FA</option>
-    <option value="pl">🇵🇱 PL</option>
-    <option value="nl">🇳🇱 NL</option>
-    <option value="sv">🇸🇪 SV</option>
-    <option value="uk">🇺🇦 UK</option>
-    <option value="kk">🇰🇿 KK</option>
-    <option value="az">🇦🇿 AZ</option>
-    <option value="id">🇮🇩 ID</option>
-  </select>
-  <div class="toggle" onclick="toggleTheme()">
-    <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="5"/>
-      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-    </svg>
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <div class="site-logo" onclick="handleLogoClick()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#58CC02">
+        <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm6 12H6v-.6C6 15.1 8.7 13 12 13s6 2.1 6 4.4v.6z"/>
+      </svg>
+      <span class="logo-text">FlashCard</span>
+    </div>
+
+    <div class="header-right">
+      <select id="langSelect" onchange="changeLanguage(this.value)" class="lang-select">
+        <option value="en">🇬🇧 EN</option>
+        <option value="uz">🇺🇿 UZ</option>
+        <option value="ru">🇷🇺 RU</option>
+        <option value="tr">🇹🇷 TR</option>
+        <option value="de">🇩🇪 DE</option>
+        <option value="fr">🇫🇷 FR</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="it">🇮🇹 IT</option>
+        <option value="pt">🇧🇷 PT</option>
+        <option value="ar">🇸🇦 AR</option>
+        <option value="zh">🇨🇳 ZH</option>
+        <option value="ja">🇯🇵 JA</option>
+        <option value="ko">🇰🇷 KO</option>
+        <option value="hi">🇮🇳 HI</option>
+        <option value="fa">🇮🇷 FA</option>
+        <option value="pl">🇵🇱 PL</option>
+        <option value="nl">🇳🇱 NL</option>
+        <option value="sv">🇸🇪 SV</option>
+        <option value="uk">🇺🇦 UK</option>
+        <option value="kk">🇰🇿 KK</option>
+        <option value="az">🇦🇿 AZ</option>
+        <option value="id">🇮🇩 ID</option>
+      </select>
+      <div class="toggle" onclick="toggleTheme()">
+        <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </div>
+      <div id="headerUser" class="header-user hidden">
+        <div class="header-avatar" id="headerAvatar">U</div>
+        <button class="header-signout" onclick="handleSignOut()" data-i18n="signOut">Sign out</button>
+      </div>
+    </div>
   </div>
-</div>
+</header>
 
 <!-- ═══ LANDING ═══ -->
 <div id="landing">
@@ -117,43 +132,69 @@
       </div>
     </div>
 
-    <!-- ═══ DOWNLOAD / INSTALL ═══ -->
-    <div class="download-section" id="downloadSection">
-      <h2 class="download-title" data-i18n="downloadTitle">📲 Install the App</h2>
-      <p class="download-sub" data-i18n="downloadSub">Use FlashCard on any device — no app store needed!</p>
-      <div class="download-cards">
-        <div class="dl-card" id="dlAndroid">
-          <div class="dl-icon">🤖</div>
-          <div class="dl-name">Android</div>
-          <div class="dl-hint" data-i18n="dlAndroidHint">Open in Chrome → Menu → Add to Home Screen</div>
-          <button class="dl-btn" onclick="triggerPWAInstall()" data-i18n="dlInstall">⬇ Install</button>
+  </div>
+</div>
+
+<!-- ═══ DOWNLOAD / INSTALL ═══ -->
+<div class="download-section" id="downloadSection">
+  <div class="download-inner">
+    <h2 class="download-title" data-i18n="downloadTitle">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" style="vertical-align:middle;margin-right:8px;opacity:.8"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+      Install the App
+    </h2>
+    <p class="download-sub" data-i18n="downloadSub">Use FlashCard on any device — no app store needed!</p>
+    <div class="download-cards">
+      <div class="dl-card" id="dlAndroid">
+        <div class="dl-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="52" height="52" fill="#3DDC84">
+            <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84 1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A6.93 6.93 0 0 0 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C7.14 3.45 6 5.35 6 7.5h12c0-2.15-1.14-4.05-2.47-5.34zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+          </svg>
         </div>
-        <div class="dl-card">
-          <div class="dl-icon">🍎</div>
-          <div class="dl-name">iOS</div>
-          <div class="dl-hint" data-i18n="dlIOSHint">Open in Safari → Share → Add to Home Screen</div>
-          <button class="dl-btn dl-ios" onclick="showIOSGuide()" data-i18n="dlHowTo">📖 How to</button>
-        </div>
-        <div class="dl-card">
-          <div class="dl-icon">🪟</div>
-          <div class="dl-name">Windows / Mac</div>
-          <div class="dl-hint" data-i18n="dlDesktopHint">Open in Chrome/Edge → Address bar → Install icon</div>
-          <button class="dl-btn" onclick="triggerPWAInstall()" data-i18n="dlInstall">⬇ Install</button>
-        </div>
+        <div class="dl-name">Android</div>
+        <div class="dl-hint" data-i18n="dlAndroidHint">Open in Chrome → Menu → Add to Home Screen</div>
+        <button class="dl-btn" onclick="triggerPWAInstall()" data-i18n="dlInstall">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:5px"><path d="M16 13h-3V3h-2v10H8l4 4 4-4zm-9 6v2h14v-2H7z"/></svg>
+          Install
+        </button>
       </div>
-      <!-- iOS guide popup -->
-      <div id="iosGuide" class="ios-guide hidden">
-        <button class="ios-close" onclick="document.getElementById('iosGuide').classList.add('hidden')">✕</button>
-        <h3>Install on iPhone / iPad</h3>
-        <ol>
-          <li>Open this page in <strong>Safari</strong></li>
-          <li>Tap the <strong>Share</strong> button (square with arrow)</li>
-          <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-          <li>Tap <strong>"Add"</strong> — done!</li>
-        </ol>
+      <div class="dl-card">
+        <div class="dl-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="52" height="52" fill="#A3AAAE">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+        </div>
+        <div class="dl-name">iOS</div>
+        <div class="dl-hint" data-i18n="dlIOSHint">Open in Safari → Share → Add to Home Screen</div>
+        <button class="dl-btn dl-ios" onclick="showIOSGuide()" data-i18n="dlHowTo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:5px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          How to
+        </button>
+      </div>
+      <div class="dl-card">
+        <div class="dl-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="52" height="52">
+            <path fill="#0078D4" d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .15V5.21L20 3zM3 13l6 .09v6.81l-6-1.15V13zm17 .25V22l-10-1.91V13.1l10 .15z"/>
+          </svg>
+        </div>
+        <div class="dl-name">Windows / Mac</div>
+        <div class="dl-hint" data-i18n="dlDesktopHint">Open in Chrome/Edge → Address bar → Install icon</div>
+        <button class="dl-btn" onclick="triggerPWAInstall()" data-i18n="dlInstall">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:5px"><path d="M16 13h-3V3h-2v10H8l4 4 4-4zm-9 6v2h14v-2H7z"/></svg>
+          Install
+        </button>
       </div>
     </div>
-
+    <!-- iOS guide popup -->
+    <div id="iosGuide" class="ios-guide hidden">
+      <button class="ios-close" onclick="document.getElementById('iosGuide').classList.add('hidden')">✕</button>
+      <h3>Install on iPhone / iPad</h3>
+      <ol>
+        <li>Open this page in <strong>Safari</strong></li>
+        <li>Tap the <strong>Share</strong> button (square with arrow)</li>
+        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+        <li>Tap <strong>"Add"</strong> — done!</li>
+      </ol>
+    </div>
   </div>
 </div>
 
@@ -322,5 +363,50 @@
 <div id="memoryGame" style="display:none;"></div>
 
 <script type="module" src="app.js"></script>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer" id="siteFooter">
+  <div class="footer-inner">
+    <div class="footer-cols">
+
+      <!-- Col 1: Brand -->
+      <div class="footer-col">
+        <div class="footer-brand">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#58CC02">
+            <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm6 12H6v-.6C6 15.1 8.7 13 12 13s6 2.1 6 4.4v.6z"/>
+          </svg>
+          <span class="footer-brand-name">FlashCard</span>
+        </div>
+        <p class="footer-tagline">AI-powered vocabulary learning<br>for everyone, everywhere.</p>
+      </div>
+
+      <!-- Col 2: Links -->
+      <div class="footer-col">
+        <span class="footer-col-title">Links</span>
+        <a class="footer-link">Privacy Policy</a>
+        <a class="footer-link">Terms of Use</a>
+        <a class="footer-link">Contact Us</a>
+      </div>
+
+      <!-- Col 3: Developer -->
+      <div class="footer-col">
+        <span class="footer-col-title">Developer</span>
+        <div class="footer-dev-name">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="opacity:.5;flex-shrink:0"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          Hudoyarov O'ktam
+        </div>
+        <div class="footer-dev-phone">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="opacity:.5;flex-shrink:0"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+          +998 99 709 34 79
+        </div>
+      </div>
+
+    </div>
+    <div class="footer-bar">
+      <span>© 2025 FlashCard. All rights reserved.</span>
+      <span>Made with ♥ by Hudoyarov O'ktam</span>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

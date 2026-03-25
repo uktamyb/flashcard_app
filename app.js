@@ -78,6 +78,9 @@ onAuthChange(async (user) => {
     document.getElementById("landing").style.display = "block";
     document.getElementById("home").style.display = "none";
     document.getElementById("app").style.display = "none";
+    document.getElementById("downloadSection").style.display = "block";
+    document.getElementById("siteFooter").style.display = "block";
+    document.getElementById("headerUser").classList.add("hidden");
   }
 });
 
@@ -131,8 +134,16 @@ async function showHome() {
   document.getElementById("home").style.display = "flex";
   document.getElementById("app").style.display = "none";
   document.getElementById("landing").style.display = "none";
+  document.getElementById("downloadSection").style.display = "block";
+  document.getElementById("siteFooter").style.display = "block";
   const user = await getUser();
-  if (user) document.getElementById("userEmail").textContent = user.email;
+  if (user) {
+    document.getElementById("userEmail").textContent = user.email;
+    const headerUser = document.getElementById("headerUser");
+    const headerAvatar = document.getElementById("headerAvatar");
+    headerAvatar.textContent = user.email.charAt(0).toUpperCase();
+    headerUser.classList.remove("hidden");
+  }
   applyTranslations();
   await renderDecks();
   await loadAIInsight();
@@ -141,6 +152,8 @@ async function showHome() {
 function goHome() {
   document.getElementById("home").style.display = "flex";
   document.getElementById("app").style.display = "none";
+  document.getElementById("downloadSection").style.display = "block";
+  document.getElementById("siteFooter").style.display = "block";
   const launchArea = document.getElementById("mgLaunchArea");
   if (launchArea) launchArea.style.display = "none";
   renderDecks();
@@ -213,6 +226,8 @@ async function loadDeck(deckId) {
 
   document.getElementById("home").style.display = "none";
   document.getElementById("app").style.display = "flex";
+  document.getElementById("downloadSection").style.display = "none";
+  document.getElementById("siteFooter").style.display = "none";
   applyTranslations();
 
   // Memory game tugmasini ko'rsat (2+ so'z bo'lsa)
@@ -700,3 +715,14 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 window.swapLangs = swapLangs;
 window.updateTranslatePlaceholders = updateTranslatePlaceholders;
+window.handleLogoClick = function() {
+  if (currentUser) {
+    goHome();
+  } else {
+    document.getElementById("landing").style.display = "block";
+    document.getElementById("home").style.display = "none";
+    document.getElementById("app").style.display = "none";
+    document.getElementById("downloadSection").style.display = "block";
+    document.getElementById("siteFooter").style.display = "block";
+  }
+};
