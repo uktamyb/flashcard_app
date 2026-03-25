@@ -510,3 +510,108 @@ input:focus { border-color: #6366f1 !important; }
   border-radius: 999px;
   margin-left: 3px;
 }
+
+/* ═══ DOWNLOAD / INSTALL SECTION ═══ */
+.download-section {
+  margin-top: 48px;
+  padding: 40px 24px;
+  border-radius: 24px;
+  text-align: center;
+  position: relative;
+}
+.dark  .download-section { background: linear-gradient(135deg, #0f2235, #1a2a3a); border: 1.5px solid #2a3f50; }
+.light .download-section { background: linear-gradient(135deg, #f0fff4, #e6f7ec); border: 1.5px solid #b8e6c4; }
+
+.download-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.dark  .download-title { color: #e8f4f8; }
+.light .download-title { color: #1a3a28; }
+
+.download-sub {
+  font-size: 15px;
+  margin: 0 0 28px;
+  opacity: 0.65;
+}
+
+.download-cards {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dl-card {
+  border-radius: 20px;
+  padding: 24px 20px;
+  min-width: 160px;
+  flex: 1;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+.dark  .dl-card { background: #1a2a3a; border: 1.5px solid #2a3f50; }
+.light .dl-card { background: white; border: 1.5px solid #d4edda; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.dl-card:hover { transform: translateY(-4px); }
+
+.dl-icon { font-size: 36px; }
+.dl-name { font-size: 15px; font-weight: 800; }
+.dark  .dl-name { color: #e8f4f8; }
+.light .dl-name { color: #1a3a28; }
+
+.dl-hint {
+  font-size: 11px;
+  opacity: 0.55;
+  line-height: 1.4;
+  text-align: center;
+  min-height: 32px;
+}
+
+.dl-btn {
+  margin: 4px 0 0 !important;
+  padding: 10px 18px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer;
+  background: linear-gradient(135deg, #58CC02, #46A302) !important;
+  color: white !important;
+  box-shadow: 0 3px 0 #3a8f01 !important;
+  transition: all 0.15s;
+  width: 100%;
+}
+.dl-btn:hover  { transform: translateY(-2px) !important; box-shadow: 0 5px 0 #3a8f01 !important; background: linear-gradient(135deg, #65d900, #52b803) !important; }
+.dl-btn:active { transform: translateY(1px) !important; box-shadow: 0 1px 0 #3a8f01 !important; }
+.dl-btn.dl-ios {
+  background: linear-gradient(135deg, #1CB0F6, #0090d4) !important;
+  box-shadow: 0 3px 0 #0070a8 !important;
+}
+.dl-btn.dl-ios:hover { background: linear-gradient(135deg, #3fc0ff, #0ea0e8) !important; box-shadow: 0 5px 0 #0070a8 !important; }
+
+/* iOS guide */
+.ios-guide {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 2000;
+  border-radius: 24px 24px 0 0;
+  padding: 28px 24px 40px;
+  text-align: left;
+}
+.dark  .ios-guide { background: #1a2a3a; border-top: 2px solid #2a3f50; color: #e8f4f8; }
+.light .ios-guide { background: white; border-top: 2px solid #d4edda; color: #1a3a28; }
+.ios-guide h3 { margin: 0 0 16px; font-size: 18px; font-weight: 800; }
+.ios-guide ol { padding-left: 20px; line-height: 2; font-size: 15px; margin: 0; }
+.ios-close {
+  position: absolute !important;
+  top: 14px !important; right: 16px !important;
+  background: none !important; border: none !important;
+  font-size: 20px; cursor: pointer; opacity: 0.5;
+  box-shadow: none !important; padding: 4px !important; margin: 0 !important;
+}
+.ios-close:hover { opacity: 1; transform: none !important; }

@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlashCard — Learn Vocabulary</title>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#58CC02">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FlashCard">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%2358CC02'/%3E%3Ctext x='256' y='330' font-size='260' text-anchor='middle' fill='white'%3E📚%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="AI-powered vocabulary flashcard app. Learn words from movies, books, and podcasts.">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="memory-game.css">
 </head>
@@ -107,6 +116,44 @@
         </div>
       </div>
     </div>
+
+    <!-- ═══ DOWNLOAD / INSTALL ═══ -->
+    <div class="download-section" id="downloadSection">
+      <h2 class="download-title" data-i18n="downloadTitle">📲 Install the App</h2>
+      <p class="download-sub" data-i18n="downloadSub">Use FlashCard on any device — no app store needed!</p>
+      <div class="download-cards">
+        <div class="dl-card" id="dlAndroid">
+          <div class="dl-icon">🤖</div>
+          <div class="dl-name">Android</div>
+          <div class="dl-hint" data-i18n="dlAndroidHint">Open in Chrome → Menu → Add to Home Screen</div>
+          <button class="dl-btn" onclick="triggerPWAInstall()" data-i18n="dlInstall">⬇ Install</button>
+        </div>
+        <div class="dl-card">
+          <div class="dl-icon">🍎</div>
+          <div class="dl-name">iOS</div>
+          <div class="dl-hint" data-i18n="dlIOSHint">Open in Safari → Share → Add to Home Screen</div>
+          <button class="dl-btn dl-ios" onclick="showIOSGuide()" data-i18n="dlHowTo">📖 How to</button>
+        </div>
+        <div class="dl-card">
+          <div class="dl-icon">🪟</div>
+          <div class="dl-name">Windows / Mac</div>
+          <div class="dl-hint" data-i18n="dlDesktopHint">Open in Chrome/Edge → Address bar → Install icon</div>
+          <button class="dl-btn" onclick="triggerPWAInstall()" data-i18n="dlInstall">⬇ Install</button>
+        </div>
+      </div>
+      <!-- iOS guide popup -->
+      <div id="iosGuide" class="ios-guide hidden">
+        <button class="ios-close" onclick="document.getElementById('iosGuide').classList.add('hidden')">✕</button>
+        <h3>Install on iPhone / iPad</h3>
+        <ol>
+          <li>Open this page in <strong>Safari</strong></li>
+          <li>Tap the <strong>Share</strong> button (square with arrow)</li>
+          <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+          <li>Tap <strong>"Add"</strong> — done!</li>
+        </ol>
+      </div>
+    </div>
+
   </div>
 </div>
 

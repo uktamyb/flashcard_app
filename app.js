@@ -8,6 +8,33 @@ import { MemoryGame } from "./memory-game.js";
   if (saved) document.body.className = saved;
 })();
 
+/* ─── PWA SERVICE WORKER ─── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+/* ─── PWA INSTALL PROMPT ─── */
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _pwaPrompt = e;
+});
+
+window.triggerPWAInstall = function() {
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(() => { _pwaPrompt = null; });
+  } else {
+    alert('To install: open this page in Chrome/Edge and click the install icon in the address bar, or use the browser menu → "Install app".');
+  }
+};
+
+window.showIOSGuide = function() {
+  document.getElementById('iosGuide')?.classList.remove('hidden');
+};
+
 /* ─── TIL ─── */
 window.changeLanguage = function(lang) {
   setLang(lang);

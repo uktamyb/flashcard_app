@@ -26,7 +26,7 @@ export class MemoryGame {
     this.level   = 1;
     this.score   = 0;
     this.xp      = 0;
-    this.hearts  = 3;
+    this.hearts  = 5;
     this.flipped = [];   // currently flipped card elements (max 2)
     this.matched = [];   // matched card IDs
     this.locked  = false;
@@ -47,7 +47,7 @@ export class MemoryGame {
     this.level  = 1;
     this.score  = 0;
     this.xp     = 0;
-    this.hearts = 3;
+    this.hearts = 5;
     this._startLevel();
   }
 
@@ -132,8 +132,9 @@ export class MemoryGame {
 
     if (this.allWords.length < 2) { this._renderEmpty(); return; }
 
-    // Level N = N pairs, max 6 pairs
-    const pairCount = Math.min(this.level, this.allWords.length, 6);
+    // Level N = N pairs, max 8 pairs per level (infinite levels after that)
+    const maxPairs = Math.min(this.allWords.length, 8);
+    const pairCount = Math.min(this.level, maxPairs);
 
     if (this.isDailyChallenge) {
       const daily = this._getDailyWords();
@@ -173,7 +174,7 @@ export class MemoryGame {
   }
 
   _heartsHTML() {
-    return [0,1,2].map(i =>
+    return [0,1,2,3,4].map(i =>
       `<span class="mg-heart ${i < this.hearts ? 'active' : 'lost'}">❤️</span>`
     ).join('');
   }
@@ -182,7 +183,6 @@ export class MemoryGame {
     const pairs  = this.currentWords.length;
     const total  = pairs * 2;
     const cols   = total <= 4 ? 2 : total <= 6 ? 3 : 4;
-    const maxLvl = Math.min(this.allWords.length, 6);
 
     this.container.innerHTML = `
       <div class="mg-wrapper">
@@ -190,7 +190,7 @@ export class MemoryGame {
         <div class="mg-header">
           <div class="mg-header-left">
             <button class="mg-back-btn" id="mgBack">⬅</button>
-            <div class="mg-level-badge">⚡ Level ${this.level}/${maxLvl}</div>
+            <div class="mg-level-badge">⚡ Level ${this.level}</div>
           </div>
           <div class="mg-header-center">
             <div class="mg-hearts" id="mgHearts">${this._heartsHTML()}</div>
@@ -370,9 +370,12 @@ export class MemoryGame {
     this._sound('levelup');
     this.xp += 20;
 
-    const maxLvl = Math.min(this.allWords.length, 6);
-    const isLast = this.level >= maxLvl;
-    const stars  = this.hearts >= 3 ? '⭐⭐⭐' : this.hearts >= 2 ? '⭐⭐' : '⭐';
+    const stars = this.hearts >= 5 ? '⭐⭐⭐' : this.hearts >= 3 ? '⭐⭐' : '⭐';
+
+    // Streak bonuses every 5 levels
+    const isStreakBonus = this.level % 5 === 0;
+    const bonusXP = isStreakBonus ? 50 : 20;
+    this.xp += isStreakBonus ? 30 : 0; // extra XP already added above
 
     const board = this.container.querySelector('#mgBoard');
     if (!board) return;
@@ -380,26 +383,20 @@ export class MemoryGame {
     board.className = 'mg-level-complete';
     board.id = 'mgBoard';
     board.innerHTML = `
-      <span class="mg-complete-icon">🎉</span>
-      <h2 class="mg-complete-title">${t('mgLevelDone', this.level)}</h2>
-      <p class="mg-complete-score">+20 XP &nbsp;·&nbsp; ${t('mgTotalScore', this.score)}</p>
+      <span class="mg-complete-icon">${isStreakBonus ? '🏆' : '🎉'}</span>
+      <h2 class="mg-complete-title">${isStreakBonus ? '🔥 ' : ''}${t('mgLevelDone', this.level)}</h2>
+      <p class="mg-complete-score">+${bonusXP} XP &nbsp;·&nbsp; ${t('mgTotalScore', this.score)}</p>
       <div class="mg-stars">${stars}</div>
-      <button class="mg-next-btn" id="mgNext">
-        ${isLast ? t('mgFinishGame') : t('mgNextLevel')}
-      </button>
+      <button class="mg-next-btn" id="mgNext">${t('mgNextLevel')}</button>
     `;
 
     const xpEl = this.container.querySelector('#mgXP');
     if (xpEl) xpEl.textContent = `⭐ ${this.xp} XP`;
 
     board.querySelector('#mgNext').addEventListener('click', () => {
-      if (isLast) {
-        this.close();
-      } else {
-        this.level++;
-        this.hearts = Math.min(3, this.hearts + 1); // restore 1 heart as reward
-        this._startLevel();
-      }
+      this.level++;
+      this.hearts = Math.min(5, this.hearts + 1); // restore 1 heart as reward
+      this._startLevel();
     });
   }
 

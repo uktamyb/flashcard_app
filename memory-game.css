@@ -414,3 +414,44 @@ body.light {
 #memoryGame button {
   margin: 0 !important;
 }
+
+/* ── Fix: launch buttons — override global dark/light button styles ── */
+.dark .mg-launch-btn,
+.light .mg-launch-btn {
+  border: none !important;
+  box-shadow: none;
+}
+.dark .mg-launch-btn.green,
+.light .mg-launch-btn.green {
+  background: linear-gradient(135deg, #58CC02, #46A302) !important;
+  color: white !important;
+  box-shadow: 0 4px 0 #3a8f01 !important;
+}
+.dark .mg-launch-btn.blue,
+.light .mg-launch-btn.blue {
+  background: linear-gradient(135deg, #1CB0F6, #0090d4) !important;
+  color: white !important;
+  box-shadow: 0 4px 0 #0070a8 !important;
+}
+.dark .mg-launch-btn.green:hover,
+.light .mg-launch-btn.green:hover {
+  background: linear-gradient(135deg, #65d900, #52b803) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #3a8f01 !important;
+}
+.dark .mg-launch-btn.blue:hover,
+.light .mg-launch-btn.blue:hover {
+  background: linear-gradient(135deg, #3fc0ff, #0ea0e8) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #0070a8 !important;
+}
+.dark .mg-launch-btn.green:active,
+.light .mg-launch-btn.green:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 2px 0 #3a8f01 !important;
+}
+.dark .mg-launch-btn.blue:active,
+.light .mg-launch-btn.blue:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 2px 0 #0070a8 !important;
+}
