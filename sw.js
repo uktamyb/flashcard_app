@@ -1,15 +1,16 @@
 // FlashCard PWA Service Worker
-const CACHE = 'flashcard-v1';
+const CACHE = 'flashcard-v2';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/memory-game.css',
-  '/app.js',
-  '/auth.js',
-  '/i18n.js',
-  '/memory-game.js',
-  '/manifest.json'
+  './index.html',
+  './style.css',
+  './memory-game.css',
+  './app.js',
+  './auth.js',
+  './i18n.js',
+  './memory-game.js',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', e => {
@@ -27,17 +28,14 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Network first for API calls, cache first for static assets
   const url = new URL(e.request.url);
-  if (url.hostname.includes('supabase') || url.pathname.startsWith('/api')) {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match(e.request))
-    );
+  if (url.hostname.includes('supabase') || url.pathname.includes('/rest/') || url.pathname.includes('/auth/')) {
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
     return;
   }
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-      if (res.ok) {
+      if (res && res.ok) {
         const clone = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, clone));
       }

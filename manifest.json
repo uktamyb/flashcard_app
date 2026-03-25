@@ -2,19 +2,14 @@
   "name": "FlashCard — Learn Vocabulary",
   "short_name": "FlashCard",
   "description": "AI-powered vocabulary flashcard app. Learn words from movies, books, and podcasts.",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0d1b2a",
   "theme_color": "#58CC02",
   "orientation": "portrait-primary",
   "lang": "en",
   "icons": [
-    {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%2358CC02'/%3E%3Ctext x='256' y='330' font-size='260' text-anchor='middle' fill='white'%3E📚%3C/text%3E%3C/svg%3E",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
@@ -28,14 +23,5 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "productivity"],
-  "screenshots": [],
-  "shortcuts": [
-    {
-      "name": "My Decks",
-      "short_name": "Decks",
-      "description": "Go to your vocabulary decks",
-      "url": "/"
-    }
-  ]
+  "categories": ["education", "productivity"]
 }
